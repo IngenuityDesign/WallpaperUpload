@@ -1,0 +1,44 @@
+<?php
+
+$supports =  array('festive','cal','quote1','quote2');
+$sizes = array('1920x1080', '320x480', '720x1280', '1280x1024', '1366x768' );
+
+die(json_encode(array(
+	'wallpapers' => array(
+		(object) array('name' => "Amp It Up",
+					   'guid' => "April2014_blue.jpg",
+					   'supports' =>$supports,
+					   'sizes' => $sizes ),
+		(object) array('name' => "Chill Out",
+					   'guid' => "April2014_teal.jpg",
+					   'supports' =>$supports,
+					   'sizes' => $sizes ),
+		(object) array('name' => "Picture This",
+					   'guid' => "April2014_image.jpg",
+					   'supports' =>$supports,
+					   'sizes' => $sizes ),
+		(object) array('name' => "Texture",
+					   'guid' => "April2014_texture.jpg",
+					   'supports' =>$supports,
+					   'sizes' => $sizes )),
+	'overlays' => (object) array(
+		'festive' => (object) array(
+			'name' => "Iconic",
+			'suffix' => "_festivecal",
+			'id' => "festive"
+			),
+		'cal' => (object) array(
+			'name' => "Time Tracker",
+			'suffix' => "_cal",
+			'id' => "cal"
+			),
+		'quote1' => (object) array(
+			'name' => "Inspire Me",
+			'suffix' => "_quote1",
+			'id' => "quote1"
+			),
+		'quote2' => (object) array(
+			'name' => "Entertain Me",
+			'suffix' => "_quote2",
+			'id' => "quote2"
+			)))));
