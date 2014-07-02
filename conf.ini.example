@@ -1,0 +1,6 @@
+[FTP Info]
+
+server = "localhost";
+user = "root"; 
+password = "root"; 
+path = "/wallpaper/parts/wallpapers/%s"; 
