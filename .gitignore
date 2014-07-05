@@ -2,3 +2,5 @@ conf.ini
 *.log
 *.DS_Store
 desktop.ini
+/GuiWallpaper/nbproject/private/
+/GuiWallpaper/build/

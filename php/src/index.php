@@ -1,7 +1,7 @@
 <?php
 
-include('lib/vendor/progressbar.php');
-require('lib/args.php');
+include('phar://wpupload.phar/progress.php');
+require('phar://wpupload.phar/args.php');
 
 function print_verbose( $string ) {
 	global $args;
@@ -68,7 +68,7 @@ class IngenuityWallpaperFile {
 
 			
 		} else {
-			echo "Could not parse " . $filepath . PHP_EOL;
+			print_verbose("Could not parse " . $filepath . PHP_EOL);
 		}
 		
 		
@@ -138,6 +138,8 @@ class IngenuityWallpaperFile {
 			case IMAGETYPE_PNG:
 				$this->newImage = imagecreatefrompng($this->path);
 				break;
+            default:
+                return false;
 		}
 		if ($this->newImage === false) {
 			return false;
@@ -166,8 +168,8 @@ class IngenuityWallpaperFile {
 	
 	public function maybeSize() {
 		global $args;
-		$this->getFInfo();
-		if (true) {
+		@$this->getFInfo();
+		if ($this->mime) {
 			if ($args->isVerbose()) printf("Resizing %s from %dx%d to %dx%d\n", basename($this->path), $this->fileWidth, $this->fileHeight, $this->width, $this->height);
 			$this->createNew();
 		}
@@ -200,7 +202,7 @@ $input = ($args->getInputDirectory()) ? $args->getInputDirectory() : 'input';
 
 if (is_dir($input)) {
 	$x = ListIn($input);
-} else die("Could not find directory: " . $input );
+} else die("Could not find directory: " . $input . PHP_EOL );
 
 define('ABSPATH', dirname(__FILE__) . DIRECTORY_SEPARATOR );
 
@@ -227,10 +229,15 @@ if (!$args->noResize()) {
 	
 	//we got the script now we can write it
 	print_verbose("Writing configuration file.\n");
-	
-	$handle = fopen( '.tmp/conf.php', 'w+' );
-	fwrite( $handle, $json );
-	fclose( $handle );
+    Phar::interceptFileFuncs();
+    if (file_exists('.tmp/conf.php')) {
+        $handle = fopen( '.tmp/conf.php', 'w+' );
+        fwrite( $handle, $json );
+        fclose( $handle );
+    } else {
+        echo "We were not able to find a conf.php file" . PHP_EOL;
+    }
+
 }
 
 if ($args->FTP()):

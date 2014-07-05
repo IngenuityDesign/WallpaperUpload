@@ -7,15 +7,13 @@ class Args {
 	public function getInputDirectory() {
 		//this will be the last argument
 		$maybeIt = $this->args[count($this->args) - 1];
-		
-		//check if it is prefixed with a dash 
+		//check if it is prefixed with a dash
 		if (preg_match("#^-+#", $maybeIt)) {
 			return false;	
 		}
 		
 		//replace home string
 		$maybeIt = preg_replace("#^[~]#", $_SERVER['HOME'], $maybeIt);
-		
 		//this seems to be it. we need to maybe suffix it with up to /* so we will remove it and add it again
 		$maybeIt = realpath($maybeIt);
 		return $maybeIt;
