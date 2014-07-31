@@ -12,4 +12,4 @@ $phar["progress.php"] = file_get_contents($srcRoot . "/lib/vendor/progressbar.ph
 $phar->addEmptyDir('.tmp');
 $phar->setStub($phar->createDefaultStub("index.php"));
 
-copy($srcRoot . "/conf.ini", $buildRoot . "/conf.ini");
+@copy($srcRoot . "/conf.ini", $buildRoot . "/conf.ini");
