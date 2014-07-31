@@ -13,6 +13,8 @@ class Args {
 		}
 		
 		//replace home string
+		if (!$home = $_SERVER['HOME']) $home = $_SERVER['HOMEDRIVE'] + $_SERVER['HOMEPATH'];
+		
 		$maybeIt = preg_replace("#^[~]#", $_SERVER['HOME'], $maybeIt);
 		//this seems to be it. we need to maybe suffix it with up to /* so we will remove it and add it again
 		$maybeIt = realpath($maybeIt);

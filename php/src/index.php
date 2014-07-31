@@ -130,25 +130,25 @@ class IngenuityWallpaperFile {
 	public function createNew() {
 		switch ($this->mime) {
 			case IMAGETYPE_GIF:
-				$this->newImage = imagecreatefromgif($this->path);
+				$newImg = imagecreatefromgif($this->path);
 				break;
 			case IMAGETYPE_JPEG:
-				$this->newImage = imagecreatefromjpeg($this->path);
+				$newImg = imagecreatefromjpeg($this->path);
 				break;
 			case IMAGETYPE_PNG:
-				$this->newImage = imagecreatefrompng($this->path);
+				$newImg = imagecreatefrompng($this->path);
 				break;
             default:
                 return false;
 		}
-		if ($this->newImage === false) {
+		if ($newImg === false) {
 			return false;
 		}
 		
 		//get proper aspect ratio
 		$aspect = $this->width / $this->height;
 		$thumbnail_gd_image = imagecreatetruecolor($this->width, $this->height);
-		imagecopyresampled($thumbnail_gd_image, $this->newImage, 0, 0, 0, 0, $this->width, $this->height, $this->fileWidth, $this->fileHeight);
+		imagecopyresampled($thumbnail_gd_image, $newImg, 0, 0, 0, 0, $this->width, $this->height, $this->fileWidth, $this->fileHeight);
 		imagejpeg($thumbnail_gd_image, ABSPATH . ".tmp" . DIRECTORY_SEPARATOR . basename($this->path), 90);
 		
 		
@@ -162,7 +162,10 @@ class IngenuityWallpaperFile {
 			copy( $this->path, ABSPATH . '.tmp' . DIRECTORY_SEPARATOR . $fileName ); //done
 		}
 		
-		$this->newImage = $thumbnail_gd_image = NULL;
+		$newImg = NULL;
+		$thumbnail_gd_image = NULL;
+		
+		unset ($newImg, $thumbnail_gd_image);
 		
 	}
 	
@@ -230,7 +233,7 @@ if (!$args->noResize()) {
 	//we got the script now we can write it
 	print_verbose("Writing configuration file.\n");
     Phar::interceptFileFuncs();
-    if (file_exists('.tmp/conf.php')) {
+    if (file_exists( ABSPATH . '.tmp/conf.php')) {
         $handle = fopen( '.tmp/conf.php', 'w+' );
         fwrite( $handle, $json );
         fclose( $handle );
@@ -249,7 +252,6 @@ if ($args->FTP()):
 	$ftp_user_name= isset($conf['user']) ? $conf['user'] : false;
 	$ftp_user_pass= isset($conf['password']) ? $conf['password'] : false;
 	$remote_file = isset($conf['path']) ? $conf['path'] : "/%s";
-	
 	// set up basic connection 
 	$conn_id = ftp_connect($ftp_server); 
 	
@@ -257,11 +259,11 @@ if ($args->FTP()):
 	$login_result = ftp_login($conn_id, $ftp_user_name, $ftp_user_pass); 
 	ftp_pasv( $conn_id, true );
 	// upload a file 
-	$news = ListIn('.tmp');
+	$news = ListIn( ABSPATH . '.tmp');
 	try {
 		$i = 0;
 		foreach($news as $file) {
-			$file = '.tmp' . DIRECTORY_SEPARATOR . $file;
+			$file = ABSPATH . '.tmp' . DIRECTORY_SEPARATOR . $file;
 			$i++;
 			status_bar( $i, $news);
 			if (basename($file) == "conf.php") {
@@ -291,8 +293,8 @@ endif;
 echo "Cleaning .tmp directory\n";
 
 foreach(ListIn('.tmp') as $file ) {
-	$file = '.tmp' . DIRECTORY_SEPARATOR . $file;
-	unlink($file);	
+	$file = ABSPATH . '.tmp' . DIRECTORY_SEPARATOR . $file;
+	@unlink($file);	
 }
 
 
