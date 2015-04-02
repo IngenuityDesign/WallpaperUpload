@@ -1,4 +1,5 @@
 conf.ini
+*.phar
 *.log
 *.DS_Store
 desktop.ini

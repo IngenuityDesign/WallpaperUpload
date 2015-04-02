@@ -193,16 +193,17 @@ class IngenuityWallpaperFile {
 		$aspect = $this->width / $this->height;
 		$thumbnail_gd_image = imagecreatetruecolor($this->width, $this->height);
 		imagecopyresampled($thumbnail_gd_image, $newImg, 0, 0, 0, 0, $this->width, $this->height, $this->fileWidth, $this->fileHeight);
-		imagejpeg($thumbnail_gd_image, ABSPATH . ".tmp" . DIRECTORY_SEPARATOR . $this->generateFilename(), 90);
+
+		imagejpeg($thumbnail_gd_image, TMP . DIRECTORY_SEPARATOR . $this->generateFilename(), 90);
 
 		if ($this->width == 1920) {
 			//create regular preview
-			$fileName = ABSPATH . ".tmp" . DIRECTORY_SEPARATOR . sprintf("preview_%s%d_%s_%s.jpg", $this->month, $this->year, $this->type, $this->subtype);
+			$fileName = TMP . DIRECTORY_SEPARATOR . sprintf("preview_%s%d_%s_%s.jpg", $this->month, $this->year, $this->type, $this->subtype);
 			imagejpeg($thumbnail_gd_image, $fileName, 90);
 		} elseif ($this->width == 320) {
 			//create mobile preview
 			$fileName = sprintf("preview_mobile_%s%d_%s_%s.jpg", $this->month, $this->year, $this->type, $this->subtype);
-			copy( $this->path, ABSPATH . '.tmp' . DIRECTORY_SEPARATOR . $fileName ); //done
+			copy( $this->path, TMP . DIRECTORY_SEPARATOR . $fileName ); //done
 		}
 
 		$newImg = NULL;
@@ -252,6 +253,9 @@ if (is_dir($input)) {
 
 define('ABSPATH', dirname(__FILE__) . DIRECTORY_SEPARATOR );
 
+define('TMP', $args->tmpDirectory(ABSPATH . ".tmp"));
+
+
 $files = array();
 $i = 0;
 printf("Resizing %d total files.\n", count($x));
@@ -277,7 +281,7 @@ if (!$args->noResize()) {
 	print_verbose("Writing configuration file.\n");
     Phar::interceptFileFuncs();
 	try {
-        $handle = fopen( ABSPATH . '.tmp ' . DIRECTORY_SEPARATOR . 'conf.php', 'w+' );
+        $handle = fopen( TMP . DIRECTORY_SEPARATOR . 'conf.php', 'w+' );
 		if ($handle) {
 			fwrite( $handle, $json );
 			fclose( $handle );
@@ -294,7 +298,8 @@ if ($args->FTP()):
 
 	echo "Now to try to upload them via FTP!\n";
 
-	$conf = parse_ini_file('conf.ini');
+	$conf = parse_ini_file('phar://wpupload.phar/conf.ini');
+
 	$ftp_server = isset($conf['server']) ? $conf['server'] : false;
 	$ftp_user_name= isset($conf['user']) ? $conf['user'] : false;
 	$ftp_user_pass= isset($conf['password']) ? $conf['password'] : false;
@@ -306,11 +311,11 @@ if ($args->FTP()):
 	$login_result = ftp_login($conn_id, $ftp_user_name, $ftp_user_pass);
 	ftp_pasv( $conn_id, true );
 	// upload a file
-	$news = ListIn( ABSPATH . '.tmp');
+	$news = ListIn( TMP );
 	try {
 		$i = 0;
 		foreach($news as $file) {
-			$file = ABSPATH . '.tmp' . DIRECTORY_SEPARATOR . $file;
+			$file = TMP . DIRECTORY_SEPARATOR . $file;
 			$i++;
 			status_bar( $i, $news);
 			if (basename($file) == "conf.php") {
@@ -337,12 +342,16 @@ if ($args->FTP()):
 
 endif;
 
-echo "Cleaning .tmp directory\n";
+if (!$args->noClean()) {
 
-foreach(ListIn('.tmp') as $file ) {
-	$file = ABSPATH . '.tmp' . DIRECTORY_SEPARATOR . $file;
-	@unlink($file);
+	echo "Cleaning tmp directory\n";
+
+	foreach(ListIn(TMP) as $file ) {
+		$file = TMP . DIRECTORY_SEPARATOR . $file;
+		if (strstr($file, '.jpg'))
+			@unlink($file);
+	}
+
 }
-
 
 echo "Done working\n";

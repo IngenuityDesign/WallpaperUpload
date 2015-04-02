@@ -57,5 +57,30 @@ class Args {
 		if ( in_array( $str, $this->args )) return true;
 		return false;
 	}
+
+	public function noClean() {
+		return $this->s( '--no-clean' );
+	}
+
+	public function tmpDirectory($default) {
+		$str = false;
+		foreach( $this->args as $arg ) {
+			if (preg_match("#^-tmp=#", $arg)) {
+				$str = preg_replace("#^-tmp=#", "", $arg);
+
+				if (!$home = $_SERVER['HOME']) $home = $_SERVER['HOMEDRIVE'] + $_SERVER['HOMEPATH'];
+		
+				$str = preg_replace("#^[~]#", $_SERVER['HOME'], $str);
+				//this seems to be it. we need to maybe suffix it with up to /* so we will remove it and add it again
+				$str = realpath($str);
+
+				if (!is_writable($str)) {
+					throw new Exception("Tmp directory is not writable");
+				}
+			}
+		}
+		
+		return $str ? $str : $default;
+	}
 		
 }

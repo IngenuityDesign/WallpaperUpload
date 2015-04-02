@@ -2,23 +2,24 @@
 
 $supports =  array('festive','cal','quote1','quote2');
 $sizes = array('1920x1080', '320x480', '720x1280', '1280x1024', '1366x768' );
+$month = "November";
 
 die(json_encode(array(
 	'wallpapers' => array(
 		(object) array('name' => "Amp It Up",
-					   'guid' => "April2014_blue.jpg",
+					   'guid' => $month . "2014_color1.jpg",
 					   'supports' =>$supports,
 					   'sizes' => $sizes ),
 		(object) array('name' => "Chill Out",
-					   'guid' => "April2014_teal.jpg",
-					   'supports' =>$supports,
+					   'guid' => $month . "2014_color2.jpg",
+					   'supports' => $supports,
 					   'sizes' => $sizes ),
 		(object) array('name' => "Picture This",
-					   'guid' => "April2014_image.jpg",
-					   'supports' =>$supports,
+					   'guid' => $month . "2014_image.jpg",
+					   'supports' => $supports,
 					   'sizes' => $sizes ),
 		(object) array('name' => "Texture",
-					   'guid' => "April2014_texture.jpg",
+					   'guid' => $month . "2014_texture.jpg",
 					   'supports' =>$supports,
 					   'sizes' => $sizes )),
 	'overlays' => (object) array(
